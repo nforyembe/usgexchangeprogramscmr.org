@@ -789,6 +789,10 @@ input, textarea, button {
   text-align: center;
 }
 
+.ql-editor {
+  min-height: 300px !important;
+}
+
 /* Tablet Breakpoint */
 /* Desktop Breakpoint */
 .carousel {
@@ -831,14 +835,12 @@ form {
 form input, form textarea {
   display: block;
   width: 100%;
-  padding: 15px;
+}
+form input, form textarea, form select, form .form-control {
+  padding: 15px !important;
   border-radius: 0 !important;
   border: none !important;
-  box-shadow: 0px 0px 0.75px #2581c4;
-}
-form label {
-  display: block;
-  margin-bottom: 5px;
+  box-shadow: 0px 0px 1px #2581c4;
 }
 
 .feedback {

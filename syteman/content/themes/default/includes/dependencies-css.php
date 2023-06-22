@@ -30,8 +30,9 @@
         
     ?>
 
+<!-- Local Stylesheets -->
 
     <?php if(file_exists(PATH_TO_SYM_THEME . '/assets/css/main.css')): ?>
-        <!-- Local Stylesheets -->
+        <!-- Main Stylesheet -->
         <link rel="stylesheet" href="<?=BASE_URL . REL_PATH_TO_SYM_THEME; ?>assets/css/main.css" type="text/css" />
     <?php endif; ?>

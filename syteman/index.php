@@ -1,7 +1,10 @@
 <?php
 
+
 // Include the autoload register
 require_once 'autoload.php';
+
+header("Content-Disposition: inline");
 
 
 // Include a Sessions file 

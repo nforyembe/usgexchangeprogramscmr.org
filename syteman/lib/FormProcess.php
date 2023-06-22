@@ -1,6 +1,6 @@
 <?php
 
-class FormProcess {
+class FormProcess extends Db {
     
     function __construct() 
     {
@@ -17,11 +17,20 @@ class FormProcess {
                 case 'Subscribe':
                     $this->process_newsletter_subscribe();
                     break;
+                
+                case 'Create Account':
+                    // $this->register_user();
+                    break;
+                
+                case 'Login':
+                    // AUTH::login_user();
+                    break;
 
                 default: 
                     break; 
                     
             }
+
         }
         
     }
@@ -31,12 +40,12 @@ class FormProcess {
 
         if ($error_message != null) {
 
-            if (self::validate_empty_post_variable($input, $error_message, $error_container)) {
+            if ($this->validate_empty_post_variable($input, $error_message, $error_container)) {
                 return $_POST[$input];
             }
 
         } else {
-            return self::clean_input($input);
+            return $this->clean_input($input);
         }
 
     }
@@ -45,24 +54,7 @@ class FormProcess {
     // Checks if get_magic_quotes is enabled or uses addslashes to escape special characters 
     public function clean_input($input) {
 
-        $magic_quotes_active = get_magic_quotes_gpc();
-        $new_enough_php = function_exists("mysqli_real_escape_string()");
-
-        if ($new_enough_php) {
-            
-            if ($magic_quotes_active) {
-                $clean_input = stripslashes($_POST[$input]);
-            }
-        
-        } else {
-
-            if (!$magic_quotes_active) {
-                $clean_input = addslashes($_POST[$input]);
-            }
-
-        }
-
-        return trim($clean_input);
+        return htmlspecialchars(trim(stripslashes($_POST[$input])));
 
     }
 
@@ -85,6 +77,26 @@ class FormProcess {
         }
 
         return true;
+
+    }
+
+
+    static function create_link_from_form_input($prefix=null)
+    {
+        
+        if (isset($_POST['link']) && $_POST['link'] != '') {
+
+            $link = Run::create_link_from_string($_POST['link']);
+
+        } else {
+
+            if (isset($_POST['title']) && $_POST['title'] != '') $link = Run::create_link_from_string($_POST['title']);
+                elseif (isset($_POST['name']) && $_POST['name'] != '') $link = Run::create_link_from_string($_POST['name']);
+                    else $link = false; // uniqid($prefix . (!is_null($prefix) ? '-' : ''));
+                    
+        }
+
+        return $link;
 
     }
 
@@ -115,8 +127,8 @@ class FormProcess {
     function process_contact_form() {
 
         $vldt = new Validate;
-
-        if(isset($_POST['submit'])) {
+        
+        if(isset($_POST['contact'])) {
             
             $errors = $progress = $submitted = $form_feedback = array();
 
@@ -169,7 +181,7 @@ class FormProcess {
                 
                 if ($progress['send_status'] == true) {
                     
-                    $form_feedback[] = 'Thank you for writing to us, Someone from our Team will reply to your message soon.</p> <p>Please keep visiting our website';
+                    $form_feedback[] = 'Thank you for writing to us, Someone from our Team will reply to your message soon.</p> Please keep visiting our website';
                     
                     // Insert the Data into DB
                     // Initialize the db object 
@@ -231,7 +243,7 @@ class FormProcess {
 
             } else {
 
-                Run::set_flash_message(['errors' => $errors]);
+                Run::set_flash_message(['error' => $errors]);
                 Run::set_flash_message(['submitted' => $submitted]);
 
             }
@@ -247,7 +259,7 @@ class FormProcess {
 
         $vldt = new Validate;
 
-        if(isset($_POST['submit'])) {
+        if(isset($_POST['subscribe'])) {
             $errors = $progress = $submitted = $form_feedback = array();
 
             $submitted['first_name'] = $_COOKIE['first_name'] = $this->check_and_assign_post_value('first_name', 'First Name cannot be empty', $errors);
@@ -306,7 +318,7 @@ class FormProcess {
 
             } else {
 
-                Run::set_flash_message(['errors' => $errors]);
+                Run::set_flash_message(['error' => $errors]);
                 Run::set_flash_message(['submitted' => $submitted]);
 
             }
@@ -319,82 +331,239 @@ class FormProcess {
 
 
     function do_login() {
+        
+        $errors = $progress = $submitted = $form_feedback = array();
 
-        if(isset($_POST['login'])) {
-            
-            $errors = $progress = $submitted = $form_feedback = array();
+        // if (!defined('DEVELOPMENT')) {
 
-            // if (!defined('DEVELOPMENT')) {
-
-            //     if (isset($_SESSION['captcha_code'])) {
-                    
-            //         if (isset($_POST['captcha'])) {
-                            
-            //             if($_POST['captcha'] != $_SESSION['captcha_code']) {
-            //                 $errors[] = 'Wrong Captcha!!!';
-            //             }
-                        
-            //         } else {
-
-            //             $errors[] = 'No captcha verification was sent';
-                        
-            //         }
-
-            //     } else {
-                    
-            //         $errors[] = 'Captcha verification is not active';
-                    
-            //     }
-
-            // }
-
-            $submitted['username'] = $_COOKIE['username'] = $this->check_and_assign_post_value('username', 'Names cannot be empty', $errors);
-            $submitted['password'] = $_COOKIE['password'] = $this->check_and_assign_post_value('password', 'Email cannot be empty', $errors);
-
-            if(empty($errors)) {
-
-                $db = new Db;
-                $user = new User;
-
-                $params = [
-                    'table_name' => $user->feature_table,
-                    'columns' => $user->select_columns,
-                    'condition' => $user->feature_table . '.username="' . $submitted['username'] . '" AND ' . $user->feature_table . '.hashed_password="' . sha1($submitted['password']) . '"'
-                ];
-
-                $user_exists = $user->fetch_data_for_this_feature(null, $params);
-
-                // Check if Insert succeeds and log.
-                if (isset($user_exists['error'])) {
-                    
-                    Run::set_flash_message(['errors' => 'Username and Password was not Found']);
-                    return null;
-
-                } else return $user_exists[0];
+        //     if (isset($_SESSION['captcha_code'])) {
                 
-            } else return null;
+        //         if (isset($_POST['captcha'])) {
+                        
+        //             if($_POST['captcha'] != $_SESSION['captcha_code']) {
+        //                 $errors[] = 'Wrong Captcha!!!';
+        //             }
+                    
+        //         } else {
+
+        //             $errors[] = 'No captcha verification was sent';
+                    
+        //         }
+
+        //     } else {
+                
+        //         $errors[] = 'Captcha verification is not active';
+                
+        //     }
+
+        // }
+
+        $submitted['username'] = $_COOKIE['username'] = $this->check_and_assign_post_value('username', 'username cannot be empty', $errors);
+        $submitted['password'] = $_COOKIE['password'] = $this->check_and_assign_post_value('password', 'password cannot be empty', $errors);
+        
+        if(empty($errors)) {
+            
+            $db = new Db;
+            $user = new User;
+
+            $params = [
+                'table_name' => $user->feature_table,
+                'columns' => $user->select_columns,
+                'condition' => $user->feature_table . '.username="' . $submitted['username'] . '" OR ' . $user->feature_table . '.email="' . $submitted['username'] . '" AND ' . $user->feature_table . '.hashed_password="' . sha1($submitted['password']) . '" AND ' . $user->feature_table . '.role<2'
+            ];
+
+            $user_exists = $user->fetch_data_for_this_feature(null, $params);
+
+            // var_dump($user_exists); die;
+
+            // Check if Insert succeeds and log.
+            if (isset($user_exists['error'])) {
+                
+                Run::set_flash_message(['error' => 'Username and Password was not Found']);
+                return null;
+
+            } else return $user_exists[0];
+            
+        } else return null;
+
+    }
+
+
+    function do_user_login() {
+        Auth::login_user();
+    }
+
+    function do_logout() {
+        Auth::do_logout();
+    }
+
+
+    function register_user() {
+            
+        $errors = $progress = $submitted = $form_feedback = array();
+
+        // if (!defined('DEVELOPMENT')) {
+
+        //     if (isset($_SESSION['captcha_code'])) {
+                
+        //         if (isset($_POST['captcha'])) {
+                        
+        //             if($_POST['captcha'] != $_SESSION['captcha_code']) {
+        //                 $errors[] = 'Wrong Captcha!!!';
+        //             }
+                    
+        //         } else {
+
+        //             $errors[] = 'No captcha verification was sent';
+                    
+        //         }
+
+        //     } else {
+                
+        //         $errors[] = 'Captcha verification is not active';
+                
+        //     }
+
+        // }
+
+        $user = new User;
+
+        $submitted['first_name'] = $_COOKIE['first_name'] = $this->check_and_assign_post_value('first_name', 'First Name cannot be empty', $errors);
+        $submitted['last_name'] = $_COOKIE['last_name'] = $this->check_and_assign_post_value('last_name', 'Last Name cannot be empty', $errors);
+        $submitted['dob'] = $_COOKIE['dob'] = $this->check_and_assign_post_value('dob');
+        $submitted['gender'] = $_COOKIE['gender'] = $this->check_and_assign_post_value('gender', 'You must indicate a Gender', $errors);
+        $submitted['email'] = $_COOKIE['email'] = $this->check_and_assign_post_value('email', 'Email cannot be empty', $errors);
+        $submitted['password'] = $this->check_and_assign_post_value('password', 'Password cannot be empty', $errors);
+
+        if(empty($errors)) {
+
+            // $db = new Db;
+            $user = new User;
+
+            $params = [
+                'table_name' => $user->feature_table,
+                'columns' => 'id',
+                'condition' => $user->feature_table . '.email="' . $submitted['email'] . '"'
+            ];
+
+            $user_exists = $user->confirm_feature_exists(null, $params);
+
+            // Check if User with email exists.
+            if ($user_exists) {
+                
+                // User with email already exists.                    
+                Run::set_flash_message(['error' => 'Ooops! That Email is already Registered. <a href="' . BASE_URL . '/login">Please Sign In instead</a>']);
+                // return null;            
+
+            } else {
+                
+                $register_user = $user->add_feature_data(null, 'submit');
+                // var_dump($register_user);
+                
+                // Check if Insert succeeds and log.
+                if ($register_user['status'] == true) {
+
+                    // ...and then destroy the cookies
+                    // Find a Cleaner way of doing this
+                    foreach ($submitted as $key=>$value) {
+
+                        if (isset($_COOKIE[$key])) {
+
+                            unset($_COOKIE[$key]);
+                            setcookie($key, '', time() - 3600, '/'); // empty value and old timestamp
+
+                        }
+
+                    }
+
+                    // Send the Data by Email to form owner
+                    $email_header = "From: info@mezampdi.com\n"
+                        . "Reply-To: info@mezampdi.com\n"
+                        . "MIME-Version: 1.0\r\n" 
+                        . "Content-Type: text/html; charset=ISO-8859-1\r\n";
+
+                    $email_subject = "Welcome to the " . ORG_ACRONYM . " Family";
+
+                    $email_message = '<p>Hi ' . $submitted['first_name'] . '<br> Thank you for joining the ' . ORG_ACRONYM . 'Family';
+                    
+                    $email_send_to = $submitted['email'];
+
+                    $this->send_with_mail($email_send_to, $email_subject, $email_message, $email_header, $progress);
+                
+                    if ($progress['send_status'] == true) {
+                        
+                        $form_feedback[] = 'Thank you for Joining the ' . ORG_ACRONYM . 'Family <br>Your Account has been created. <br>You will receive an email from us shortly confirming this.';
+
+                    } else {
+
+                        $form_feedback[] = 'Your Account has been created, but we could not send you a confirmation email.' 
+                            . (defined('ORG_EMAIL') ? ' <strong>Please contact us directly at ' . ORG_EMAIL . '</strong> if you face any difficulties with your account.' : '' );
+
+                    }
+
+                    // Login the User
+                    Auth::login_user();
+
+                    Run::redirect_to(BASE_URL . '/account');
+
+                } else {
+                    
+                    // Log the error to a logfile.
+                    // Get the Correct Error code.
+                    $log = new Log;
+                    if (isset($register_user['error']))
+                        foreach ($register_user['error'] as $error) $log -> app_log_message('error', 'Problem adding new user to DB ->  ' . $error);
+
+                    // Could not Add User.
+                    Run::set_flash_message(['error' => 'Ooops! We could not add your Account at the moment, Please try again']);
+
+                }
+
+                if ($form_feedback) Run::set_flash_message(['feedback' => $form_feedback]);
+                if ($progress) Run::set_flash_message(['progress' => $progress]);
+
+            }
+            
+        } else {
+    
+            Run::set_flash_message(['error' => $errors]);
+            Run::set_flash_message(['submitted' => $submitted]);
 
         }
 
     }
 
 
-    static function create_link_from_form_input($prefix=null)
-    {
+    function login_user() {
         
-        if (isset($_POST['link']) && $_POST['link'] != '') {
+        $errors = $progress = $submitted = $form_feedback = array();
 
-            $link = Run::create_link_from_string($_POST['link']);
+        $submitted['email'] = $_COOKIE['email'] = $this->check_and_assign_post_value('email', 'email cannot be empty', $errors);
+        $submitted['password'] = $_COOKIE['password'] = $this->check_and_assign_post_value('password', 'password cannot be empty', $errors);
+        
+        if(empty($errors)) {
+            
+            $db = new Db;
+            $user = new User;
 
-        } else {
+            $params = [
+                'table_name' => $user->feature_table,
+                'columns' => $user->select_columns,
+                'condition' => $user->feature_table . '.email="' . $submitted['email'] . '" AND ' . $user->feature_table . '.hashed_password="' . sha1($submitted['password']) . '"'
+            ];
 
-            if (isset($_POST['title']) && $_POST['title'] != '') $link = Run::create_link_from_string($_POST['title']);
-                elseif (isset($_POST['name']) && $_POST['name'] != '') $link = Run::create_link_from_string($_POST['name']);
-                    else $link = false; // uniqid($prefix . (!is_null($prefix) ? '-' : ''));
-                    
-        }
+            $user_exists = $user->fetch_data_for_this_feature(null, $params);
+            // var_dump($user_exists);
 
-        return $link;
+            // Check if Insert succeeds and log.
+            if (isset($user_exists['error'])) {
+
+                Run::set_flash_message(['error' => 'email and Password was not Found']);
+                return null;
+
+            } else return $user_exists[0];                
+            
+        } else return null;
 
     }
 

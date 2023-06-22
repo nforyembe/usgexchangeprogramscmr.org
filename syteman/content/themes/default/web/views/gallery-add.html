@@ -1,0 +1,46 @@
+<div class="col-11 col-lg-7">
+    <form class="form w-100" method="post" action="" enctype="multipart/form-data">
+                
+        <div class="row justify-content-center g-0 mb-3">
+            <div class="col-lg-6 py-3">
+                <label for="image" class="py-1 px-3 d-inline bg-custom-light text-secondary">Image</label>
+                <input type="file" name="image" id="image" value="" class="p-3 bg-white small" multiple>
+            </div>
+    
+            <div class="col-lg-6 py-3">
+                <label for="image_caption" class="py-1 px-3 d-inline bg-custom-light text-secondary"></label>
+                <input type="text" class="form-control p-3" name="image_caption" value="" placeholder="Image Caption" />
+            </div>
+        </div>
+
+        <?php if (FEATURE_CATEGORIES != null) : ?>
+    
+            <div class="col-12 mb-3">
+                <select name="category_id" class="form-select">
+                    <?php 
+                        foreach (FEATURE_CATEGORIES as $category) 
+                            echo '<option value="' . $category['id'] . '">' . $category['title'] . '</option>'; 
+                    ?>
+                    <option value="">Uncategorized</option>
+                </select>
+            </div>
+                
+        <?php endif; ?>
+
+        <div class="mb-3">
+            <input type="text" class="form-control" name="title" value="" placeholder="Image Title" />
+        </div>
+
+        <div class="row g-0 mt-5">
+
+            <div class="mb-3 col-6">
+                <input type="submit" value="Add" name="add-feature" class="form-control">
+            </div>
+
+            <div class="mb-3 col-6">
+                <a href="<?=$page ?>" class="form-control text-center">Cancel</a>
+            </div>
+                
+        </div>
+    </form>
+</div>

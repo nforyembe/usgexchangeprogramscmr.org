@@ -8,14 +8,33 @@ class Blog extends Feature
 
         parent::__construct();
 
-        $this->feature_page = 'blog';
-        
+        // Define a name for the feature and it's category
         $this->feature = 'blog';
         $this->feature_category = 'blog_category';
+
+        // For front end... the page on which the features will be displayed
+        $this->feature_page = 'blog';
+        $this->template_preview = 'blog-preview.html';
+        // $this->template_detail = 'blog-detail.html';
+
+        // For backend... the CRUD files
+        // $this->feature_category_add_template = '';
+        // $this->feature_category_update_template = '';
+        $this->feature_add_template = 'blog-add.html';
+        // $this->feature_update_template = '';
+
+        // Define the names of the tables as on db
         $this->feature_category_table = 'blog_categories';
         $this->feature_category_content_table = 'blog_category_content';
+
         $this->feature_table = 'blog_posts';
         $this->feature_content_table = 'blog_post_content';
+        
+        // Define the columns to join the feature content table to the feature table
+        $this->join_column = 'blog_id';
+        // ...and (if category_id was not used), the column to join the feature to the corresponding category content table, in the case of a categorized feature
+        // $this->join_column_category = '';
+        
 
         // Feature Category Columns to be included in RD Statements
         $this->select_category_columns = $this->feature_category_table . '.id AS id,'

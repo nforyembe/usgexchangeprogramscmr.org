@@ -12,6 +12,19 @@ class Story extends Feature
         $this->feature = 'story';
         $this->feature_category = 'story_category';
 
+        // For front end... the page on which the features will be displayed
+        $this->feature_page = 'stories';
+        $this->template_preview = 'story-preview.html';
+        // $this->template_detail = 'default-feature-view.html';
+        // $this->template_category_preview = 'default-feature-preview.html';
+        // $this->template_category_detail = 'default-feature-view.html';
+
+        // For backend... the CRUD files
+        // $this->feature_category_add_template = '';
+        // $this->feature_category_update_template = '';
+        $this->feature_add_template = 'story-add.html';
+        // $this->feature_update_template = '';
+
         // Define the names of the tables as on db
         $this->feature_table = 'stories';
         $this->feature_content_table = 'story_content';

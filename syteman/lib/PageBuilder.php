@@ -75,7 +75,7 @@ class PageBuilder extends Db
                 else define('FEATURE_CATEGORIES', null);
 
             // Create a variable and rules for paginating features
-            $results_per_page = 8;
+            $results_per_page = 20;
             $current_page = (Route::is_paginated() != null) ? Route::is_paginated() : 1;
             $results_limit = (($current_page - 1) * $results_per_page) . ',' . $results_per_page;
             
@@ -89,14 +89,23 @@ class PageBuilder extends Db
                 elseif (isset($_POST['update-feature-category'])) $result = $object->update_feature_category_data();
                 elseif (isset($_POST['delete-feature-category'])) $result = $object->delete_feature_category_data();
                     
-                echo '<div class="col-12 py-3 bg-light text-center">';
+                echo '<div class="container py-5"><div class="row justify-content-center"><div class="col-11 bg-light text-center small">';
                     if (isset($result)) {
 
-                        if (is_array($result)) foreach ($result as $feedback) echo $feedback . '<br>';
-                            else echo $result;
+                        // var_dump($result);
+                        if (is_array($result)) {
+                            
+                            foreach ($result as $feedback) {
+                                
+                                if (is_array($feedback)) foreach($feedback as $key=>$value) echo '<section><span class="px-3 bg-info">' . $value . '</section>'; 
+                                    else echo '<section><span class="px-3 bg-info">' . $feedback . '</section>';
+
+                            }
+
+                        } else echo $result;
 
                     }
-                echo '</div>';
+                echo '</div></div></div>';
 
             }
             
@@ -170,7 +179,7 @@ class PageBuilder extends Db
                 }
 
             } elseif (Route::is_add_feature_page() != false) {
-                
+
                 // Add a New Feature
                 if (in_array('c', Route::is_add_feature_page()))
                     echo Run::render_template_with_content(
@@ -189,7 +198,7 @@ class PageBuilder extends Db
                         [
                             'title' => 'Add New ' . (substr($page, -1) == 's' ? substr($page, 0, -1) : $page),
                             'description' => '',
-                            'template_file' => 'default-feature-add.html',
+                            'template_file' => (isset($object->feature_add_template) ? $object->feature_add_template : 'default-feature-add.html'),
                             'page' => $page,
                             'add' => '',
                         ]
@@ -373,12 +382,17 @@ class PageBuilder extends Db
                 if (Route::is_feature_page() != false) {
 
                     $feature_link = Route::is_feature_page()[1];
-                    $new_meta = $feature_data = $object->fetch_data_for_this_feature($feature_link)[0];
+                    $feature_data = $object->fetch_data_for_this_feature($feature_link);
+
+                    if (!isset($feature_data['error'])) $new_meta = $feature_data[0];
+                        else $new_meta = null;
 
                 } elseif (Route::is_category_page()) {
 
                     $category = Route::is_category_page();
-                    $new_meta = $category_data = $object->fetch_data_for_this_category($category)[0];
+                    $category_data = $object->fetch_data_for_this_category($category);
+
+                    if (!isset($category_data['error'])) $new_meta = $category_data[0];
                 
                 }
 
@@ -386,8 +400,6 @@ class PageBuilder extends Db
                 $url = '';
 
             }
-
-            
 
         } else {
 
@@ -411,7 +423,7 @@ class PageBuilder extends Db
 
         // Render the selected theme header with Navigation
         $navigation = new Menu;
-        $nav_links = $navigation->get_navigation();
+        $nav_links = $navigation->get_navigation(1);
 
         if (!empty($nav_links)) $nav_links_to_use = $nav_links;
             else $nav_links_to_use = null; // ['No Links have been Defined'] 
@@ -439,7 +451,6 @@ class PageBuilder extends Db
                         : 'default.php'
                 )
                 : 'default.php';
-
 
             $template = PATH_TO_THEME . 'web/views/' . (
                 !empty($page_data['template_filename']) 
@@ -475,6 +486,7 @@ class PageBuilder extends Db
                 : 'default.php';
             
             // var_dump($page_data);
+            
             // Check for and capture the #Feature from the page_content column of page_data array and create a new Object of it.
             $feature_array = Run::check_for_feature($page_data['content']);
 
@@ -507,9 +519,12 @@ class PageBuilder extends Db
                 if (Route::is_feature_page() != false) {
 
                     $feature_link = Route::is_feature_page()[1];
+                    $fetched_data = $object->fetch_data_for_this_feature($feature_link);
                     
-                    $feature_data = $object->fetch_data_for_this_feature($feature_link)[0];
-                    $template = Run::get_template_file(isset($object->template_detail) ? $object->template_detail : null);
+                    if (!isset($fetched_data['error'])) $feature_data = $fetched_data[0];
+                        else $feature_data ['title'] = 'Feature Not found';
+
+                    $template = Run::get_template_file($page_data['template'], (isset($object->template_detail) ? $object->template_detail : 'default-feature-view.html'));
                     
                 } else {
                     
@@ -520,23 +535,30 @@ class PageBuilder extends Db
 
                             $category = Route::is_category_page();
 
-                            $category_data = $object->fetch_data_for_this_category($category)[0];
-                            $all_features = $object->fetch_features_by_category($category);
-                            $features = $object->fetch_features_by_category($category, ['limit' => $results_limit]);
-                            $template = Run::get_template_file($page_data['template_filename'], (isset($object->template_preview) ? $object->template_preview : null));
+                            $category_data_status = $object->fetch_data_for_this_category($category);
+                            
+                            if (!isset($category_data_status['error'])) {
+                                
+                                $category_data = $category_data_status[0];
+                                $all_features = $object->fetch_features_by_category($category);
+                                $features = $object->fetch_features_by_category($category, ['limit' => $results_limit]);
+
+                            }
+                            
+                            $template = Run::get_template_file($page_data['template'], (isset($object->template_preview) ? $object->template_preview : 'default-feature-preview.html'));
 
                         } else {
                             
                             $all_features = $object->fetch_all_feature_categories();
                             $features = $object->fetch_all_feature_categories(['limit' => $results_limit]);
-                            $template = Run::get_template_file($page_data['template_filename'], 'default-feature-category-preview.html');
+                            $template = Run::get_template_file($page_data['template'], (isset($object->template_category_preview) ? $object->template_category_preview : 'default-feature-category-preview.html'));
                             
                         }
 
                     } else {
 
                         $features = $object->fetch_all_features(['limit' => $results_limit]);
-                        $template = Run::get_template_file($page_data['template_filename'], (isset($object->template_preview) ? $object->template_preview : null));
+                        $template = Run::get_template_file($page_data['template'], (isset($object->template_preview) ? $object->template_preview : 'default-feature-preview.html'));
 
                     }
 
@@ -557,8 +579,8 @@ class PageBuilder extends Db
 
                 }
 
+                // var_dump($template);
                 
-                // Display the Information
                 echo Run::render_template_with_content(
                     PATH_TO_THEME . $layout,
                     [

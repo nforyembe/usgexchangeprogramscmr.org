@@ -1,0 +1,89 @@
+<div class="col-11 col-lg-7">
+    <form class="form w-100" method="post" action="" enctype="multipart/form-data">
+
+        <div class="row">
+            <div class="col-6 mb-3">
+                <select name="role" class="form-select">
+                    <option value="2">User</option>
+                    <option value="1">Admin</option>
+                </select>
+                <!-- <div class="form-text">Select User Type</div> -->
+            </div>
+    
+            <div class="col-6 mb-3">
+                <select name="is_active" class="form-select">
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+                </select>
+            </div>
+        </div>
+                
+        <div class="row">
+            <div class="col-lg-4 mb-3">
+                <input type="email" class="form-control" name="email" value="" placeholder="email" />
+            </div>
+                
+            <div class="col-lg-4 mb-3">
+                <input type="text" class="form-control" name="username" value="" placeholder="username" />
+            </div>
+                    
+            <div class="col-lg-4 mb-3">
+                <input type="password" class="form-control" name="password" value="" placeholder="password" />
+            </div>
+        </div>
+                
+        <div class="row">
+            <div class="col-6 mb-3">
+                <input type="text" class="form-control" name="first_name" value="" placeholder="First Name" />
+            </div>
+                    
+            <div class="col-6 mb-3">
+                <input type="text" class="form-control" name="last_name" value="" placeholder="Last Name" />
+            </div>
+        </div>
+
+        <?php if (FEATURE_CATEGORIES != null) : ?>
+
+            <div class="mb-3">
+                <select name="category_id" class="form-select">
+                    <?php 
+                        foreach (FEATURE_CATEGORIES as $category) 
+                            echo '<option value="' . $category['id'] . '">' . $category['title'] . '</option>'; 
+                    ?>
+                    <option value="">Uncategorized</option>
+                </select>
+            </div>
+                
+        <?php endif; ?>
+
+        <div class="mb-3">
+            <!-- <label for="profile">Profile</label> -->
+            <!-- <div id="profile_editor" aria-placeholder="Profile"></div> -->
+            <textarea class="form-control editor" name="profile" id="profile_editor_area" rows="3" placeholder="Profile"></textarea>
+        </div>
+        
+        <div class="row justify-content-center mb-3">
+            <div class="col-lg-6">
+                <label for="image" class="py-1 px-3 d-inline bg-custom-light text-secondary">Feature Image</label>
+                <input type="file" name="image" id="image" value="" class="bg-white small">
+            </div>
+    
+            <div class="col-lg-6">
+                <label for="dob" class="py-1 px-3 d-inline bg-custom-light text-secondary">Date of Birth</label>
+                <input type="date" class="p-3 bg-white small" name="dob" id="dob" value="" placeholder="Date of Birth" />
+            </div>
+        </div>
+
+        <div class="row g-0 mt-5">
+
+            <div class="mb-3 col-6">
+                <input type="submit" value="Add" name="add-feature" class="form-control">
+            </div>
+
+            <div class="mb-3 col-6">
+                <a href="<?=$page ?>" class="form-control text-center">Cancel</a>
+            </div>
+                
+        </div>
+    </form>
+</div>

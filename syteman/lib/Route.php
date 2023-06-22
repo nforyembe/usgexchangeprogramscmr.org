@@ -256,7 +256,19 @@ class Route {
             
             $form = new FormProcess;
 
+            if (isset($_POST['contact'])) $form->process_contact_form();
+            if (isset($_POST['subscribe'])) $form->process_newsletter_subscribe();
+            if (isset($_POST['create_user'])) $form->register_user();
+            if (isset($_POST['login_user'])) $form->do_user_login();
+
+        } elseif (!empty($_GET)) {
+            
+            $form = new FormProcess;
+
+            if (isset($_GET['logout'])) $form->do_logout();
+            
         }
+        // var_dump($_SESSION);
 
         // fetch the page's data from the pages table in the Database
         if ($current_page != null) $check = $current_page;

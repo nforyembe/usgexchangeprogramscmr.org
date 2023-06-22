@@ -35,6 +35,11 @@
 
         <?php endif; ?>
 
+        <!-- Local Scripts -->
+            <!-- TinyMCE -->
+            <script src="<?=BASE_URL . REL_PATH_TO_SYM_THEME; ?>assets/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
+
+
         <?php if(file_exists(PATH_TO_SYM_THEME . '/assets/js/main.js')): ?>
             <!-- Local JS -->
             <script src="<?=BASE_URL . REL_PATH_TO_SYM_THEME; ?>assets/js/main.js"></script>

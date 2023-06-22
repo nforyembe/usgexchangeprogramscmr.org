@@ -10,6 +10,18 @@ class Theme extends Feature
 
         $this->feature = 'theme';
         $this->feature_table = 'themes';
+        
+        // For frontend... the page on which the features will be displayed
+        // $this->feature_page = '';
+        // $this->template_preview = '';
+        // $this->template_detail = '';
+
+        // For backend... the CRUD files
+        // $this->feature_category_add_template = '';
+        // $this->feature_category_update_template = '';
+        // $this->feature_add_template = 'theme-add.html';
+        // $this->feature_update_template = 'theme-update.html';
+        
 
         // Feature Columns to be included in RD Statements
         $this->select_columns = $this->feature_table . '.id AS id,'

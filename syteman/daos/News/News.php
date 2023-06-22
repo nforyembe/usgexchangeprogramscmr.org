@@ -8,21 +8,36 @@ class News extends Feature
 
         parent::__construct();
 
+        // Define a name for the feature and it's category
         $this->feature = 'news';
         $this->feature_category = 'news_category';
 
         // For front end... the page on which the features will be displayed
         $this->feature_page = 'news';
         $this->template_preview = 'news-preview.html';
+        // $this->template_detail = 'news-detail.html';
+        // $this->template_category_preview = 'default-feature-preview.html';
+        // $this->template_category_detail = 'default-feature-view.html';
 
+        // For backend... the CRUD files
+        // $this->feature_category_add_template = 'default-feature-category-add.html';
+        // $this->feature_category_update_template = 'default-feature-category-edit.html';
+        $this->feature_add_template = 'news-add.html';
+        // $this->feature_update_template = 'news-edit.html';
+
+        // Define the names of the tables as on db
         $this->feature_category_table = 'news_categories';
         $this->feature_category_content_table = 'news_category_content';
 
         $this->feature_table = 'news';
         $this->feature_content_table = 'news_content';
         
+        // Define the columns to join the feature content table to the feature table
         $this->join_column = 'news_id';
+        // ...and (if category_id was not used), the column to join the feature to the corresponding category content table, in the case of a categorized feature
+        // $this->join_column_category = '';
 
+        
         // Feature Category Columns to be included in RD Statements
         $this->select_category_columns = $this->feature_category_table . '.id AS id,'
             . $this->feature_category_table . '.is_active AS is_active,'

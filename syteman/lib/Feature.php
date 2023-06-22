@@ -40,10 +40,15 @@ class Feature extends Db {
             if (!isset($_POST['update-feature']))
                 if ($post == 'link' && $this->link_can_be_generated()) $columns_to_add[$column] = 'link';
 
-            if (isset($_FILES[$post]) && File::check_if_file_is_submitted()) $columns_to_add[$column] = $post;                
+            if (isset($_FILES[$post]) && File::check_if_file_is_submitted()) {
+
+                $columns_to_add[$column] = $post;
+
+            }               
 
         }
-
+        
+        // var_dump($columns_to_add);
         return $columns_to_add;
 
     }
@@ -51,7 +56,7 @@ class Feature extends Db {
 
     public function resolve_values_to_insert($columns, &$feedback=null)
     {
-
+        
         $values_to_insert = array();
 
         foreach ($columns as $column => $post_key) {
@@ -60,7 +65,12 @@ class Feature extends Db {
 
                 if (!isset($_POST['update-feature'])) {
 
-                    if ($_POST[$post_key] != '') $values_to_insert[$post_key] = $_POST[$post_key];
+                    if ($_POST[$post_key] != '') {
+                        
+                        if ($post_key == 'password') $values_to_insert['hashed_password'] = sha1($_POST[$post_key]);
+                            else $values_to_insert[$post_key] = $_POST[$post_key];
+
+                    }
                 
                 } else $values_to_insert[$post_key] = $_POST[$post_key];
 
@@ -69,6 +79,23 @@ class Feature extends Db {
             }
 
             if ($post_key == 'link') $values_to_insert['link'] = FormProcess::create_link_from_form_input($this->feature);
+
+        }
+
+        // var_dump($columns);
+
+        if (isset($_POST['category_id'])) {
+            
+            if (isset($values_to_insert['category_id'])) {
+
+                if (isset($this->join_column_category)) {
+                    
+                    $values_to_insert[$this->join_column_category] = $values_to_insert['category_id'];
+                    unset($values_to_insert['category_id']);
+
+                }
+
+            }
 
         }
 
@@ -81,15 +108,20 @@ class Feature extends Db {
                 
                     if (isset($_FILES[$post_key])) {
 
-                        // Validate and create a name for (each) file for db
-                        if (File::validate_file_type($_FILES[$post_key], 'image') != false) {
+                        $type_of_file = File::type_of_file($_FILES[$post_key]['type']);
 
-                            $filename[$post_key] = File::name_file(File::validate_file_type($_FILES[$post_key], 'image'), $this->feature . '-' . (isset($values_to_insert['link']) ? $values_to_insert['link'] : '') . '-' . $post_key);
+                        // Validate and create a name for (each) file for db
+                        if (File::validate_file_type($_FILES[$post_key], $type_of_file) != false) {
+
+                            $filename[$post_key] = File::name_file(
+                                File::validate_file_type($_FILES[$post_key], $type_of_file), 
+                                $this->feature . (isset($values_to_insert['link']) ? '-' . $values_to_insert['link'] . '-' : (isset($values_to_insert['title']) ? '-' . FormProcess::create_link_from_form_input($values_to_insert['title']) . '-' : '-')) . $post_key
+                            );
                         
                         } else {
 
                             $filename[$post_key] = '';
-                            $feedback[] = 'File Could not be Uploaded: [Accepted file types, include JPG, PNG, SVG or GIF]';
+                            $feedback[] = 'File Could not be Uploaded: [Accepted file types, include JPG, PNG, SVG or GIF, PDF, OFFICE]';
                             
                         }
 
@@ -104,6 +136,7 @@ class Feature extends Db {
             
         }
 
+        // var_dump($values_to_insert);
         return $values_to_insert;
 
     }
@@ -111,39 +144,31 @@ class Feature extends Db {
 
     public function resolve_feature_table_params($params=null)
     {
+
+        $sql_params['table_name'] = isset($params['table_name']) ? $params['table_name'] : $this->feature_table;
         
-        if ($params == null) {
+        // Resolve columns for DB Query
+        $sql_params['columns'] = $this->resolve_columns_to_insert_into(
+            isset($params['columns']) 
+                ? $params['columns'] 
+                : $this->feature_table_columns
+        );
+        
+        // Resolve submitted Values for each column
+        $sql_params['values'] = $this->resolve_values_to_insert($sql_params['columns']);
+        
+        if (count($sql_params['columns']) == count($sql_params['values'])) {
 
-            // Resolve columns for DB Query 
-            $columns = $this->resolve_columns_to_insert_into($this->feature_table_columns);
-            
-            // Resolve submitted Values for each column
-            $values = $this->resolve_values_to_insert($columns);
-
-            $params = [
-                'table_name' => $this->feature_table,
-                'columns' => $columns,
-                'values' => $values
-            ];
-
-            if (count($params['columns']) == count($params['values'])) {
-
-                $sql_params = $params;
-
-            } else {
-                
-                $feedback[] = 'Failed to insert Data into Default Feature Table... Columns/Value Count did not Match';
-                $sql_params = false; 
-            
-            }
+            $resolved_params = $sql_params;
 
         } else {
-
-            $sql_params = false; 
-            $feedback[] = 'No params were passed';
-
+            
+            $feedback[] = 'Failed to insert Data into Default Feature Table... Columns/Value Count did not Match';
+            $resolved_params = false; 
+        
         }
-        return $sql_params; 
+
+        return $resolved_params; 
 
     }
 
@@ -239,12 +264,19 @@ class Feature extends Db {
 
             // Resolve columns for SQL Query
             $columns = $this->resolve_columns_to_insert_into($this->feature_category_content_table_columns);
-            if ($link != null) $columns[$this->feature_category_content_table . '.' . (isset($this->join_column) ? $this->join_column : 'category_id')] = $this->feature . '_id';
+
+            if ($link != null) $columns[
+                $this->feature_category_content_table . '.' 
+                . (
+                    isset($this->join_column_category) ? $this->join_column_category : 'category_id'
+                )
+            ] = (isset($this->join_column_category) ? $this->join_column_category : $this->feature . '_id');
+
             $columns[$this->feature_category_content_table . '.lang_id'] = 'lang_id';
 
             // Resolve POST values for columns
             $content_values = $this->resolve_values_to_insert($columns);
-            if ($link != null) $content_values[$this->feature . '_id'] = $link;
+            if ($link != null) $content_values[(isset($this->join_column_category) ? $this->join_column_category : $this->feature . '_id')] = $link;
             $content_values['lang_id'] = LANG_ID;
 
             $params = [
@@ -271,7 +303,7 @@ class Feature extends Db {
 
         }
 
-        // var_dump($sql_params);
+        var_dump($content_values);
         return $sql_params;
 
     }
@@ -355,133 +387,125 @@ class Feature extends Db {
 
 
 // CREATE /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public function add_feature_data($sql_params = null) 
+    public function add_feature_data($params = null) 
     {
+    
+        // Starting with static content for the feature table.
+        // Identify submitted (POST) content and match to the defined feature DB columns
 
-        if (isset($_POST['add-feature'])) {
+        // Log level of process.
+        $feedback[] = 'attempting to add content for default Feature table.';
+
+        $sql_params = $this->resolve_feature_table_params($params);
+
+        if ($sql_params != false) {
             
-            if ($sql_params != null) {
+            if (!empty($sql_params['columns'])) {
+
+                $transaction = $this->start_transaction();
+                $feedback[] = $transaction['message'];
                 
-                // Object has sent it's params
+                $insert_feedback = $this->insert_data_into_table($sql_params);
 
-            } else {
+                if (isset($_FILES) && File::check_if_file_is_submitted()) {
 
-                // Use Default Params
+                    foreach ($sql_params['values'] as $check => $value)
+                        if (isset($_FILES[$check])) $files_to_upload[$check] = $sql_params['values'][$check];
 
-                // Starting with static content for the feature table.
-                // Identify submitted (POST) content and match to the defined feature DB columns
+                }
 
-                // Log level of process.
-                $feedback[] = 'attempting to add content for default Feature table.';
-
-                $sql_params = $this->resolve_feature_table_params();
-
-                if ($sql_params != false) {
+                if (isset($sql_params['values']['image'])) $image = $sql_params['values']['image'];
                     
-                    if (!empty($sql_params['columns'])) {
+                if ($insert_feedback['status'] == true) {
+                    
+                    // Log level of process.
+                    $feedback[] = 'Successfully Added data for the feature table';
 
-                        $transaction = $this->start_transaction();
-                        $feedback[] = $transaction['message'];
+                    // Get the ID the feature table ID and use in feature content table
+                    $inserted_id = $insert_feedback['inserted_id'];
+
+                    // Where applicable, use the Inserted ID to add dynamic (language) content for the content table.
+                    if (isset($this->feature_content_table_columns)) {
+
+                        // Log level of process.
+                        $feedback[] = 'attempting to add content for Feature [Content] table.';
                         
-                        $insert_feedback = $this->insert_data_into_table($sql_params);
+                        // Resolve columns for SQL Query
+                        $sql_params = $this->resolve_feature_content_table_params($inserted_id);
 
-                        if (isset($_FILES) && File::check_if_file_is_submitted()) {
+                        if ($sql_params != false) {
 
-                            foreach ($sql_params['values'] as $check => $value)
-                                if (isset($_FILES[$check])) $files_to_upload[$check] = $sql_params['values'][$check];
-
-                        }
-
-                        if (isset($sql_params['values']['image'])) $image = $sql_params['values']['image'];
+                            // var_dump($sql_params); die;
                             
-                        if ($insert_feedback['status'] == true) {
-                            
-                            // Log level of process.
-                            $feedback[] = 'Successfully Added data for the feature table';
+                            $insert_feedback = $this->insert_data_into_table($sql_params);
 
-                            // Get the ID the feature table ID and use in feature content table
-                            $inserted_id = $insert_feedback['inserted_id'];
+                            if (isset($_FILES) && File::check_if_file_is_submitted()) {
 
-                            // Where applicable, use the Inserted ID to add dynamic (language) content for the content table.
-                            if (isset($this->feature_content_table_columns)) {
-
-                                // Log level of process.
-                                $feedback[] = 'attempting to add content for Feature [Content] table.';
-                                
-                                // Resolve columns for SQL Query
-                                $sql_params = $this->resolve_feature_content_table_params($inserted_id);
-
-                                if ($sql_params != false) {
-                                    
-                                    $insert_feedback = $this->insert_data_into_table($sql_params);
-
-                                    if (isset($_FILES) && File::check_if_file_is_submitted()) {
-
-                                        foreach ($sql_params['values'] as $check => $value)
-                                            if (isset($_FILES[$check])) $files_to_upload[$check] = $sql_params['values'][$check];
-
-                                    }
-
-                                    // Log level of process
-                                    if ($insert_feedback['status'] == true) {
-                                        
-                                        $feedback[] = 'Successfully added data for Feature [Content] Table';
-                                        $transaction = $this->commit_transaction();
-                                    
-                                    } else {
-                                        
-                                        $feedback[] = 'Sorry, Feature [Content] data could not be Added, [Please Try again]<br>' . $insert_feedback['message'];
-                                        $transaction = $this->roll_back_transaction();
-
-                                    }
-
-                                } else {
-                                    
-                                    $feedback[] = 'Could not resolve feature [content] table params/values';
-                                    $transaction = $this->roll_back_transaction();
-                                    
-                                }
-                                
-                            } else {
-                                
-                                $transaction = $this->commit_transaction();
+                                foreach ($sql_params['values'] as $check => $value)
+                                    if (isset($_FILES[$check])) $files_to_upload[$check] = $sql_params['values'][$check];
 
                             }
 
-                            // If an Image was validated and included for upload
-                            if (isset($files_to_upload)) {
-
-                                $feedback[] = 'attempting to upload files';
-
-                                foreach ($files_to_upload as $input => $name) {
-
-                                    $upload_file = File::upload_file($_FILES[$input], $name, REL_PATH_TO_IMAGES);
-
-                                    if ($upload_file == true) $feedback[] = 'Successfully uploaded attached Image';
-                                        else $feedback[] = 'For some reason, we couldn\'t upload the file, [please try again]';
-
-                                }
+                            // Log level of process
+                            if ($insert_feedback['status'] == true) {
+                                
+                                $feedback[] = 'Successfully added data for Feature [Content] Table';
+                                $transaction = [true, $this->commit_transaction()];
+                            
+                            } else {
+                                
+                                $feedback['error'][] = 'Sorry, Feature [Content] data could not be Added, [Please Try again]<br>' . $insert_feedback['message'];
+                                $transaction = [false, $this->roll_back_transaction()];
 
                             }
 
                         } else {
                             
-                            $transaction = $this->roll_back_transaction();
-
-                            $feedback[] = 'Sorry, Content could not be Added, [Please Try again]';
-                            $feedback[] = $insert_feedback['message'];
+                            $feedback[] = 'Could not resolve feature [content] table params/values';
+                            $transaction = [false, $this->roll_back_transaction()];
                             
                         }
+                        
+                    } else {
+                        
+                        $transaction = [true, $this->commit_transaction()];
 
-                        $feedback[] = $transaction['message'];
+                    }
 
-                    } else $feedback[] = 'Could not insert: No Data was submitted';
+                    // If an Image was validated and included for upload
+                    if (isset($files_to_upload)) {
 
-                } else $feedback[] = 'Could not resolve feature table params/values';
+                        $feedback[] = 'attempting to upload files';
 
-            }
+                        foreach ($files_to_upload as $input => $name) {
+                    
+                            $type_of_file = File::type_of_file($_FILES[$input]['type']);
+                            $directory = File::file_directory($type_of_file);
 
-        } else $feedback[] = 'No data was (POST) Submitted';
+                            $upload_file = File::upload_file($_FILES[$input], $name, $directory);
+
+                            if ($upload_file == true) $feedback[] = 'Successfully uploaded attached Image';
+                                else $feedback[] = 'For some reason, we couldn\'t upload the file, [please try again]';
+
+                        }
+
+                    }
+
+                } else {
+                    
+                    $transaction = [false, $this->roll_back_transaction()];
+
+                    $feedback[] = 'Sorry, Content could not be Added, [Please Try again]';
+                    $feedback['error'][] = $insert_feedback['message'];
+                    
+                }
+                
+                $feedback[] = $transaction[1]['message'];
+                $feedback['status'] = $transaction[0];
+
+            } else $feedback[] = 'Could not insert: No Data was submitted';
+
+        } else $feedback[] = 'Could not resolve feature table params/values';
 
         return $feedback;
 
@@ -535,8 +559,7 @@ class Feature extends Db {
                                 
                                 // Resolve columns for SQL Query
                                 $sql_params = $this->resolve_feature_category_content_table_params($inserted_id);
-
-                                // var_dump($sql_params);
+                                var_dump($sql_params);
 
                                 if ($sql_params != false) {
                                     
@@ -661,7 +684,7 @@ class Feature extends Db {
         
         $sql_params = [
             'table_name' => $this->feature_table,
-            'columns' => $this->select_columns,
+            'columns' => $this->select_columns
         ];
         
         if (isset($this->feature_content_table)) {
@@ -669,6 +692,8 @@ class Feature extends Db {
             $sql_params['join'] = [
                 $this->feature_content_table => $this->feature_table . '.id=' . $this->feature_content_table . '.' . $this->feature . '_id'
             ];
+
+            $sql_params['condition'] = $this->feature_content_table . '.lang_id = ' . LANG_ID;
             
         }
 
@@ -685,7 +710,7 @@ class Feature extends Db {
 
         if (isset($this->feature_category_content_table)) 
             $sql_params['join'][$this->feature_category_content_table] = $this->feature_table . '.' . (isset($this->join_column_category) ? $this->join_column_category : 'category_id') . '=' . $this->feature_category_content_table . '.' . (isset($this->join_column_category) ? $this->join_column_category : 'category_id') . '';
-
+        
         // var_dump($sql_params);
 
         $features = $this->fetch_data_for_features($sql_params);
@@ -694,6 +719,15 @@ class Feature extends Db {
         foreach($features as $feature) $feature_data[] = self::assign_feature_values($feature, $this->feature);
 
         return $feature_data;
+
+    }
+
+
+    public function confirm_feature_exists($link, $params=null) 
+    {
+        
+        if (!isset($this->fetch_data_for_this_feature($link, $params)['error'])) return true;
+            else return false;
 
     }
 
@@ -803,10 +837,14 @@ class Feature extends Db {
         }
 
         if (is_numeric($id)) $sql_params['condition'] = $this->feature_table . '.' . (isset($this->join_column_category) ? $this->join_column_category : 'category_id') . '=' . $id . '';
-            else $sql_params['condition'] = $this->feature_table . '.' . (isset($this->join_column_category) ? $this->join_column_category : 'category_id') . ' is ' . $id . '';
+            else $sql_params['condition'] = $this->feature_category_table . '.link = "' . $id . '"';
         
         if ($params != null) {
             if (isset($params['limit'])) $sql_params['limit'] = $params['limit'];
+        }
+
+        if ($params != null) {
+            if (isset($params['sort'])) $sql_params['sort'] = $params['sort'];
         }
         
         // var_dump($sql_params);
@@ -1101,6 +1139,16 @@ class Feature extends Db {
 
     
 // Front End Methods ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    static function fetch_features($feature, $params=null) 
+    {
+        
+        $object = new $feature; 
+
+        return $object->fetch_all_features($params);
+
+    }
+
+
     static function list_features($feature, $params=null, $template_file=null) 
     {
         
@@ -1125,6 +1173,46 @@ class Feature extends Db {
             );
 
         }
+
+    }
+
+
+    static function list_feature_categories($feature, $params=null, $template_file=null) 
+    {
+        
+        $object = new $feature; 
+
+        $data = $object->fetch_all_feature_categories($params);
+        $template = PATH_TO_THEME . '/web/views/' . (
+            isset($template_file) 
+                ? $template_file 
+                : (isset($object->category_template_preview) ? $object->category_template_preview : 'default-feature-category-preview.html')
+        );
+        
+        // var_dump($data);
+        foreach ($data as $feature_data) {
+
+            echo \Run::render_template_with_content(
+                $template, 
+                [
+                    'feature_page' => $object->feature_page, 
+                    'feature_data' => $feature_data
+                ]
+            );
+
+        }
+
+    }
+
+
+    // Count Features
+    static function count_features($feature, $params=null)
+    {
+
+        $object = new $feature; 
+        $data = $object->fetch_all_features($params);
+        
+        return count($data);
 
     }
 

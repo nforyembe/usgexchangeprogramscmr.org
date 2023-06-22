@@ -1,0 +1,68 @@
+<div class="col-11 col-lg-7">
+    <form class="form w-100" method="post" action="" enctype="multipart/form-data">
+            
+        <div class="mb-3">
+            <input type="text" class="form-control" name="title" value="" placeholder="Title" />
+        </div>
+
+        <div class="mb-3">
+            <input type="text" class="form-control" name="url" value="" placeholder="URL" />
+        </div>
+
+        <div class="row align-items-center">
+            <div class="col-12 col-lg-5 mb-3">
+
+                <div class="form-check form-check-inline">
+                    <input type="radio" name="is_active" id="active" value="1" class="form-check-input" checked /> 
+                    <label class="form-check-label p-2 cursor text-uppercase" for="active">Active</label>
+                </div>
+
+                <div class="form-check form-check-inline">
+                    <input type="radio" name="is_active" id="inactive" value="0" class="form-check-input" /> 
+                    <label class="form-check-label p-2 cursor text-uppercase" for="inactive">Inactive</label>
+                </div>
+                
+            </div>
+
+            <?php if (FEATURE_CATEGORIES != null) : ?>
+
+                <div class="col mb-3">
+                    <select name="category_id" class="form-select">
+                        <?php 
+                            foreach (FEATURE_CATEGORIES as $category) 
+                                echo '<option value="' . $category['id'] . '">' . $category['title'] . '</option>'; 
+                        ?>
+                        <option value="">Uncategorized</option>
+                    </select>
+                </div>
+                    
+            <?php endif; ?>
+        </div>
+                
+        <div class="mb-3">
+            <input type="number" class="form-control" name="parent" value="" placeholder="Parent" />
+        </div>
+
+        <div class="row">
+            <div class="col mb-3">
+                <input type="text" class="form-control" name="position" value="" placeholder="Position" />
+            </div>
+    
+            <div class="col mb-3">
+                <input type="text" class="form-control" name="icon" value="" placeholder="Icon" />
+            </div>
+        </div>
+        
+        <div class="row g-0 mt-5">
+
+            <div class="mb-3 col-6">
+                <input type="submit" value="Add" name="add-feature" class="form-control px-3">
+            </div>
+
+            <div class="mb-3 col-6">
+                <a href="<?=$page ?>" class="form-control px-3 rounded-0">Cancel</a>
+            </div>
+                
+        </div>
+    </form>
+</div>

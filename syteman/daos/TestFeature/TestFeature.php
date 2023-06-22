@@ -15,6 +15,15 @@ class TestFeature extends Feature
         // For front end... the page on which the features will be displayed
         $this->feature_page = 'test_features';
         // $this->template_preview = 'default-feature-preview.html';
+        // $this->template_detail = 'default-feature-view.html';
+        // $this->template_category_preview = 'default-feature-preview.html';
+        // $this->template_category_detail = 'default-feature-view.html';
+
+        // For backend... the CRUD files
+        // $this->feature_category_add_template = 'default-feature-category-add.html';
+        // $this->feature_category_update_template = 'default-feature-category-edit.html';
+        // $this->feature_add_template = 'default-feature-add.html';
+        // $this->feature_update_template = 'default-feature-edit.html';
 
         // Define the names of the tables as on db
         $this->feature_category_table = 'test_feature_categories';
@@ -35,12 +44,13 @@ class TestFeature extends Feature
             . $this->feature_category_content_table . '.lang_id AS lang_id,'
             . $this->feature_category_content_table . '.title AS title,'
             . $this->feature_category_content_table . '.description AS description,'
-            . $this->feature_category_content_table . '.content AS content'
+            . $this->feature_category_content_table . '.content AS content,'
+            . $this->feature_category_content_table . '.image_caption AS image_caption'
         ;
 
         // Feature Category Columns to be included in CU statements
         $this->feature_category_table_columns = [
-            $this->feature_table . '.is_active' => 'is_active',
+            $this->feature_category_table . '.is_active' => 'is_active',
             $this->feature_category_table . '.link' => 'link',
             $this->feature_category_table . '.image' => 'image'
         ];
@@ -56,6 +66,7 @@ class TestFeature extends Feature
         // Feature Columns to be included in RD Statements
         $this->select_columns = $this->feature_table . '.id AS id,'
             . $this->feature_table . '.category_id AS category_id,'
+            . $this->feature_table . '.is_active AS is_active,'
             . $this->feature_table . '.name AS name,'
             . $this->feature_table . '.link AS link,'
             . $this->feature_table . '.image AS image,'

@@ -104,7 +104,7 @@ class Db {
 
             $feedback = [
                 'status' => true,
-                'message' => '[Success] Transaction Rolled Back', 
+                'message' => '[Error] Transaction Rolled Back', 
             ];
 
         } catch (Exception $e) {
@@ -166,38 +166,44 @@ class Db {
         $query = 'INSERT INTO ';
         $query .= $params['table_name'] . '(';
 
-        foreach ($params['columns'] as $column => $field) {
+            // Process Column names
+            foreach ($params['columns'] as $column => $field) {
 
-            $query .= $column;
+                $query .= $column;
 
-            // add a comma if it's not the last entry.
-            if ($column != array_key_last($params['columns'])) $query .= ', ';
-            
-        }
-
-        $query .= ') VALUES (';
-
-        foreach ($params['columns'] as $column => $field) {
+                // add a comma if it's not the last entry.
+                if ($column != array_key_last($params['columns'])) $query .= ', ';
                 
-            // Clean the input for MySQL
-            $clean_input = Run::clean_mysql_input($params['values'][$field]);
-
-            // Quote the input if it's not numeric
-            if ($clean_input != '')
-                $query .= (is_numeric($clean_input) ? $clean_input : '"' . $clean_input . '"');
-            else 
-                $query .= NULL;
-
-            // add a comma if it's not the last entry.
-            if ($column != array_key_last($params['columns'])) $query .= ', ';
+            }
             
-        }
+        $query .= ') VALUES (';
+            
+            // Process Values
+            foreach ($params['columns'] as $column => $field) {
+
+                $new_field = (str_replace($params['table_name'] . '.', '', $column) != $field) ? str_replace($params['table_name'] . '.', '', $column) : $field;
+                
+                // Clean the input for MySQL
+                // $clean_input = Run::clean_mysql_input($params['values'][(substr($column, strlen($params['table_name'])+1))]);
+                $clean_input = Run::clean_mysql_input($params['values'][$new_field]);
+                
+                // Quote the input if it's not numeric
+                if ($clean_input != '')
+                    $query .= (is_numeric($clean_input) ? $clean_input : '"' . $clean_input . '"');
+                else 
+                    $query .= 'NULL';
+
+                // add a comma if it's not the last entry.
+                if ($column != array_key_last($params['columns'])) $query .= ', ';
+
+            }
+            // die;
 
         $query .= ')';
 
-        $prepared_query = $this->db->prepare($query);
+        // var_dump($params); die;
 
-        // var_dump($query);
+        $prepared_query = $this->db->prepare($query);
 
         try {
 
@@ -384,6 +390,7 @@ class Db {
 
         $prepared_query = $this->db->prepare($query);
         $retrieve = $prepared_query->execute();
+
         $result_array = $prepared_query->fetchAll(PDO::FETCH_ASSOC);
 
         return $result_array;

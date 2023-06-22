@@ -1,26 +1,44 @@
-
 <div class="col-11 col-lg-7">
     <form class="form w-100" method="post" action="" enctype="multipart/form-data">
 
-        <div class="row">
-            <div class="col-6 mb-3">
-                <select name="role" id="" class="form-select">
+        <div class="row align-items-center">
+            <div class="col-12 col-lg-3 mb-3">
+                <select name="role" class="form-select">
                     <option value="2">User</option>
                     <option value="1">Admin</option>
                 </select>
-                <!-- <div id="" class="form-text">Select User Type</div> -->
+                <!-- <div class="form-text">Select User Role</div> -->
             </div>
     
-            <div class="col-6 mb-3">
-                <select name="is_active" id="" class="form-select">
-                    <option value="1">Active</option>
-                    <option value="0">Inactive</option>
-                </select>
+            <div class="col-12 col-lg-5 mb-3 text-center">
+                <div class="form-check form-check-inline">
+                    <input type="radio" name="is_active" id="active" value="1" class="form-check-input" checked /> 
+                    <label class="form-check-label p-2 cursor text-uppercase" for="active">Active</label>
+                </div>
+
+                <div class="form-check form-check-inline">
+                    <input type="radio" name="is_active" id="inactive" value="0" class="form-check-input" /> 
+                    <label class="form-check-label p-2 cursor text-uppercase" for="inactive">Inactive</label>
+                </div>
             </div>
+
+            <?php if (FEATURE_CATEGORIES != null) : ?>
+    
+                <div class="col-12 col-lg-4 mb-3">
+                    <select name="category_id" class="form-select">
+                        <?php 
+                            foreach (FEATURE_CATEGORIES as $category) 
+                                echo '<option value="' . $category['id'] . '">' . $category['title'] . '</option>'; 
+                        ?>
+                        <option value="">Uncategorized</option>
+                    </select>
+                </div>
+                    
+            <?php endif; ?>
         </div>
                 
         <div class="row">
-            <div class="col-6 col-lg-4 mb-3">
+            <div class="col-lg-4 mb-3">
                 <input type="email" class="form-control" name="email" value="" placeholder="email" />
             </div>
                 
@@ -28,7 +46,7 @@
                 <input type="text" class="form-control" name="username" value="" placeholder="username" />
             </div>
                     
-            <div class="col-6 col-lg-4 mb-3">
+            <div class="col-lg-4 mb-3">
                 <input type="password" class="form-control" name="password" value="" placeholder="password" />
             </div>
         </div>
@@ -43,22 +61,8 @@
             </div>
         </div>
 
-        <?php if (FEATURE_CATEGORIES != null) : ?>
-
-            <div class="mb-3">
-                <select name="category_id" id="" class="form-select">
-                    <?php 
-                        foreach (FEATURE_CATEGORIES as $category) 
-                            echo '<option value="' . $category['id'] . '">' . $category['title'] . '</option>'; 
-                    ?>
-                    <option value="">Uncategorized</option>
-                </select>
-            </div>
-                
-        <?php endif; ?>
-
         <div class="mb-3">
-            <select name="author" id="" class="form-select">                
+            <select name="author" class="form-select">                
                 <option value="<?=$_SESSION['adminid'] ?>">Author (Current User)</option>
             </select>
         </div>
@@ -104,11 +108,11 @@
         </div>
 
         <div class="mb-3">
-            <textarea class="form-control" name="profile" rows="3" placeholder="Profile"></textarea>
+            <textarea class="form-control editor" name="profile" id="profile_editor_area" rows="3" placeholder="Profile"></textarea>
         </div>
 
         <div class="mb-3">
-            <textarea class="form-control" name="content" rows="5" placeholder="Content"></textarea>
+            <textarea class="form-control editor" name="content" id="content_editor_area" rows="5" placeholder="Content"></textarea>
         </div>
                 
         <div class="row">
@@ -129,34 +133,47 @@
             <input type="text" class="form-control" name="icon" value="" placeholder="Icon" />
         </div>
 
-        <div class="row align-items-stretch g-0">
-            <div class="mb-3 col-lg-6">
-                <input type="file" name="image" value="" class=" p-2">
+        <div class="row justify-content-center mb-3">
+            <div class="col-lg-6 py-3">
+                <label for="image" class="py-1 px-3 d-inline bg-custom-light text-secondary">Feature Image</label>
+                <input type="file" name="image" id="image" value="" class="p-3 bg-white small">
+                <input type="text" class="form-control p-3" name="image_caption" value="" placeholder="Image Caption" />
             </div>
     
-            <div class="mb-3 col-lg-6">
-                <input type="text" class="form-control h-100 py-2" name="image_caption" value="" placeholder="Image Caption" />
+            <div class="col-lg-6 py-3">
+                <label for="image_share" class="py-1 px-3 d-inline bg-custom-light text-secondary">Shareable Image</label>
+                <input type="file" name="image_share" id="image_share" value="" class="p-3 bg-white small">
+                <input type="text" class="form-control p-3" name="image_share_caption" value="" placeholder="Shareable Image Caption" />
             </div>
         </div>
 
-        <div class="row align-items-stretch g-0">
-            <div class="mb-3 col-lg-6">
-                <input type="file" name="image_share" value="" class=" p-2">
+        <div class="row align-items-stretch g-0 mb-3">
+
+            <div class="col-lg-2"><label for="file_name" class="py-1 px-3 d-inline bg-custom-light text-secondary">Document</label></div>
+            <div class="w-100"></div>
+            
+            <div class="col-lg-6 mb-3">
+                <input type="file" name="file_name" id="file_name" value="" class="p-3 bg-white small">
             </div>
-    
-            <div class="mb-3 col-lg-6">
-                <input type="text" class="form-control h-100 py-2" name="image_share_caption" value="" placeholder="Shareable Image Caption" />
+            <div class="col-lg-6 mb-3">
+                <select name="file_type" class="form-select h-100 p-3 rounded-0">
+                    <option value="">File Type</option>
+                    <option value="pdf">PDF</option>
+                    <option value="word">Word</option>
+                    <option value="excel">Excel</option>
+                    <option value="powerpoint">PowerPoint</option>
+                </select>
             </div>
         </div>
         
-        <div class="row g-0">
+        <div class="row g-0 mt-5">
 
             <div class="mb-3 col-6">
-                <input type="submit" value="Add" name="add-feature" class="form-control px-3">
+                <input type="submit" value="Add" name="add-feature" class="form-control">
             </div>
 
             <div class="mb-3 col-6">
-                <a href="<?=$page ?>" class="form-control px-3 rounded-0">Cancel</a>
+                <a href="<?=$page ?>" class="form-control text-center">Cancel</a>
             </div>
                 
         </div>

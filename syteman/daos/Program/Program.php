@@ -8,17 +8,29 @@ class Program extends Feature
 
         parent::__construct();
 
+        // Define a name for the feature and it's category
         $this->feature = 'program';
 
         // For front end... the page on which the features will be displayed
         $this->feature_page = 'what-we-do';
         $this->template_preview = 'program-preview.html';
+        // $this->template_detail = 'default-feature-view.html';
+        // $this->template_category_preview = 'default-feature-preview.html';
+        // $this->template_category_detail = 'default-feature-view.html';
 
+        // For backend... the CRUD files
+        // $this->feature_category_add_template = '';
+        // $this->feature_category_update_template = '';
+        $this->feature_add_template = 'program-add.html';
+        // $this->feature_update_template = '';
 
+        // Define the names of the tables as on db
         $this->feature_table = 'programs';
         $this->feature_content_table = 'program_content';
         
         $this->join_column = 'program_id';
+        // ...and (if category_id was not used), the column to join the feature to the corresponding category content table, in the case of a categorized feature
+        // $this->join_column_category = '';
 
 
         // Feature Columns to be included in RD Statements

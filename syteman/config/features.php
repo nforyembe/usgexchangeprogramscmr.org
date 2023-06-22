@@ -92,6 +92,13 @@ return [
         'class' => 'Partner',
         'title' => 'Partners'
     ],
+    
+    'social' => [
+        'link' => 'social',
+        'icon' => 'icons',
+        'class' => 'Social',
+        'title' => 'Social Links'
+    ],
 
     'team' => [
         'link' => 'team',
@@ -107,6 +114,20 @@ return [
         'title' => 'Blog'
     ],
     
+    'publications' => [
+        'link' => 'publications',
+        'icon' => 'file-pdf',
+        'class' => 'Publication',
+        'title' => 'publications'
+    ],
+    
+    'resources' => [
+        'link' => 'resources',
+        'icon' => 'file-pdf',
+        'class' => 'Resource',
+        'title' => 'resources'
+    ],
+    
     'gallery' => [
         'link' => 'gallery',
         'icon' => 'photo-video',
@@ -120,12 +141,12 @@ return [
         'class' => 'Poem',
         'title' => 'Poems'
     ],
-    
-    'social' => [
-        'link' => 'social',
-        'icon' => 'icons',
-        'class' => 'Social',
-        'title' => 'Social Links'
+
+    'locations' => [
+        'link' => 'locations',
+        'icon' => 'map-pin',
+        'class' => 'Location',
+        'title' => 'locations'
     ],
     
     'test_feature' => [

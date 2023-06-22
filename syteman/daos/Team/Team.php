@@ -14,7 +14,14 @@ class Team extends Feature
 
         // For front end... the page on which the features will be displayed
         $this->feature_page = 'team';
-        // $this->template_preview = 'default-feature-preview.html';
+        $this->template_preview = 'team-preview.html';
+        $this->template_category_preview = 'team-category-preview.html';
+
+        // For backend... the CRUD files
+        // $this->feature_category_add_template = '';
+        // $this->feature_category_update_template = '';
+        $this->feature_add_template = 'team-add.html';
+        // $this->feature_update_template = '';
 
         // Define the names of the tables as on db
         $this->feature_category_table = 'team_categories';
@@ -124,6 +131,16 @@ class Team extends Feature
     {
 
         return parent::delete_feature_data();
+
+    }
+
+
+    // Front end methods. 
+    public function fetch_features_by_category($id, $params=null) 
+    {
+
+        $params = ['sort' => 'id ASC'];
+        return parent::fetch_features_by_category($id, $params);
 
     }
 

@@ -10,8 +10,21 @@ class ThemeTemplate extends Feature
 
         $this->feature = 'theme_template';
         $this->feature_category = 'templates';
+
+        // For frontend... the page on which the features will be displayed
+        // $this->feature_page = '';
+        // $this->template_preview = '';
+        // $this->template_detail = '';
+
+        // For backend... the CRUD files
+        // $this->feature_category_add_template = '';
+        // $this->feature_category_update_template = '';
+        $this->feature_add_template = 'theme-template-add.html';
+        // $this->feature_update_template = 'theme-template-update.html';
+
         $this->feature_category_table = 'themes';
         $this->feature_table = 'theme_templates';
+
         $this->join_column = 'theme_id';
 
         // Feature Category Columns to be included in RD Statements

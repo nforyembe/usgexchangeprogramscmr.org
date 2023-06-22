@@ -10,8 +10,21 @@ class ThemeLayout extends Feature
 
         $this->feature = 'theme_layout';
         $this->feature_category = 'theme';
+
+        // For frontend... the page on which the features will be displayed
+        // $this->feature_page = '';
+        // $this->template_preview = '';
+        // $this->template_detail = '';
+
+        // For backend... the CRUD files
+        // $this->feature_category_add_template = '';
+        // $this->feature_category_update_template = '';
+        $this->feature_add_template = 'theme-layout-add.html';
+        // $this->feature_update_template = 'theme-layout-update.html';
+        
         $this->feature_category_table = 'themes';
         $this->feature_table = 'theme_layouts';
+
         $this->join_column = 'theme_id';
 
         // Feature Category Columns to be included in RD Statements

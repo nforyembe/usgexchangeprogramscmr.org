@@ -13,9 +13,24 @@ class Partner extends Feature
 
         // For front end... the page on which the features will be displayed
         $this->feature_page = 'partners';
+        $this->template_preview = 'partner-preview.html';
+        // $this->template_detail = 'partner-detail.html';
+        // $this->template_category_preview = 'default-feature-preview.html';
+        // $this->template_category_detail = 'default-feature-view.html';
+
+        // For backend... the CRUD files
+        // $this->feature_category_add_template = '';
+        // $this->feature_category_update_template = '';
+        $this->feature_add_template = 'partner-add.html';
+        // $this->feature_update_template = '';
 
         // Define the names of the tables as on db
         $this->feature_table = 'partners';
+
+        // Define the columns to join the feature content table to the feature table
+        // $this->join_column = '';
+        // ...and (if category_id was not used), the column to join the feature to the corresponding category content table, in the case of a categorized feature
+        // $this->join_column_category = '';
 
 
         // Feature Columns to be included in RD Statements
@@ -39,30 +54,6 @@ class Partner extends Feature
             $this->feature_table . '.title' => 'title',
             $this->feature_table . '.description' => 'description'
         ];
-
-    }
-
-    
-    public function add_feature_data($sql_params=null)
-    {
-        
-        return parent::add_feature_data();
-
-    }
-
-    
-    public function update_feature_data($sql_params=null)
-    {
-
-        return parent::update_feature_data();
-
-    }
-
-    
-    public function delete_feature_data($sql_params=null)
-    {
-
-        return parent::delete_feature_data();
 
     }
 

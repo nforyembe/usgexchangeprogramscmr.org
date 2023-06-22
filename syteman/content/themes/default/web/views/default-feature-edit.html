@@ -7,6 +7,11 @@
         
         <input type="hidden" name="control" value="<?=$feature_data['id']; ?>">
         <input type="hidden" name="last_update" value="<?=date('Y-m-d') ?>">
+                    
+        <?=isset($feature_data['link']) 
+            ? '<input type="hidden" name="link" value="' . $feature_data['link'] . '" />' 
+            : '' 
+        ?>
 
         <div class="row">
 
@@ -67,12 +72,7 @@
             ?>
 
             <?=isset($feature_data['name']) 
-                ? '<div class="col mb-3"><input class="form-control" name="name" placeholder="Name" value="' . $feature_data['name'] . '" /></div>' 
-                : '' 
-            ?>
-                    
-            <?=isset($feature_data['link']) 
-                ? '<div class="col-12 mb-3"><input class="form-control" name="link" placeholder="Link" value="' . $feature_data['link'] . '" /></div>' 
+                ? '<div class="col mb-3"><input class="form-control" name="name" placeholder="Name" value="' . $feature_data['name'] . '" disabled /></div>' 
                 : '' 
             ?>
                     
@@ -86,10 +86,10 @@
                 : '' 
             ?>
                     
-            <!-- <?=isset($feature_data['date']) 
+            <?=isset($feature_data['date']) 
                 ? '<div class="col-12 mb-3"><input type="date" class="form-control" name="date" placeholder="date" value="" /></div>' 
                 : '' 
-            ?> -->
+            ?>
                     
             <?=isset($feature_data['filename'])
                 ? '<div class="mb-3"><input class="form-control" placeholder="Filename" name="filename" value="' . $feature_data['filename'] . '" /></div>' 
@@ -98,11 +98,6 @@
                     
             <?=isset($feature_data['title'])
                 ? '<div class="col mb-3"><input class="form-control" placeholder="Title" name="title" value="' . $feature_data['title'] . '" /></div>' 
-                : '' 
-            ?>
-                    
-            <?=isset($feature_data['nav_title'])
-                ? '<div class="col mb-3"><input class="form-control" placeholder="Nav Title" name="nav_title" value="' . $feature_data['nav_title'] . '" /></div>' 
                 : '' 
             ?>
                     
@@ -117,12 +112,42 @@
             ?>
 
             <?=isset($feature_data['profile'])
-                ? '<div class="col-12 mb-3"><textarea class="form-control" placeholder="Profile" name="profile" rows="3">' . $feature_data['profile'] . '</textarea></div>'
+                ? '<div class="col-12 mb-3"><textarea class="form-control editor" placeholder="Profile" name="profile" rows="3">' . $feature_data['profile'] . '</textarea></div>'
                 : ''
             ?>
 
             <?=isset($feature_data['content']) 
-                ? '<div class="col-12 mb-3"><textarea class="form-control" placeholder="Content" name="content" rows="5">' . $feature_data['content'] . '</textarea></div>' 
+                ? '<div class="col-12 mb-3"><textarea class="form-control editor" placeholder="Content" name="content" rows="5">' . $feature_data['content'] . '</textarea></div>' 
+                : ''
+            ?>
+
+            <?=isset($feature_data['content']) 
+                ? '<div class="col-12 mb-3"><textarea class="form-control editor" placeholder="Content" name="content" rows="5">' . $feature_data['content'] . '</textarea></div>' 
+                : ''
+            ?>
+
+            <?=isset($feature_data['project_info']) 
+                ? '<div class="col-12 mb-3"><textarea class="form-control editor" placeholder="Project Info" name="project_info" rows="5">' . $feature_data['project_info'] . '</textarea></div>' 
+                : ''
+            ?>
+
+            <?=isset($feature_data['project_background']) 
+                ? '<div class="col-12 mb-3"><textarea class="form-control editor" placeholder="Project Background" name="project_background" rows="5">' . $feature_data['project_background'] . '</textarea></div>' 
+                : ''
+            ?>
+
+            <?=isset($feature_data['project_objectives']) 
+                ? '<div class="col-12 mb-3"><textarea class="form-control editor" placeholder="Project Objectives" name="project_objectives" rows="5">' . $feature_data['project_objectives'] . '</textarea></div>' 
+                : ''
+            ?>
+
+            <?=isset($feature_data['project_implementation']) 
+                ? '<div class="col-12 mb-3"><textarea class="form-control editor" placeholder="Project Implementation" name="project_implementation" rows="5">' . $feature_data['project_implementation'] . '</textarea></div>' 
+                : ''
+            ?>
+
+            <?=isset($feature_data['project_evaluation']) 
+                ? '<div class="col-12 mb-3"><textarea class="form-control editor" placeholder="Project Evaluation" name="project_evaluation" rows="5">' . $feature_data['project_evaluation'] . '</textarea></div>' 
                 : ''
             ?>
 
@@ -148,7 +173,7 @@
             ?>
 
             <?=isset($feature_data['image_caption']) 
-                ? '<div class="col mb-3"><textarea class="form-control" placeholder="Image Caption" name="image_caption" rows="5">' . $feature_data['image_caption'] . '</textarea></div>' 
+                ? '<div class="col mb-3"><input type="text" class="form-control" placeholder="Image Caption" name="image_caption" value="' . $feature_data['image_caption'] . '" /></div>' 
                 : ''
             ?>
                     

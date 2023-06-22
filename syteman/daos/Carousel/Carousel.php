@@ -8,9 +8,24 @@ class Carousel extends Feature
 
         parent::__construct();
 
+        // Define a name for the feature and it's category
         $this->feature = 'carousel';
         $this->feature_category = 'carousel_category';
 
+        // For front end... the page on which the features will be displayed
+        // $this->feature_page = '';
+        // $this->template_preview = '';
+        // $this->template_detail = '';
+        // $this->template_category_preview = '';
+        // $this->template_category_detail = '';
+
+        // For backend... the CRUD files
+        // $this->feature_category_add_template = '';
+        // $this->feature_category_update_template = '';
+        $this->feature_add_template = 'carousel-add.html';
+        // $this->feature_update_template = '';
+
+        // Define the names of the tables as on db
         $this->feature_category_table = 'carousel_categories';
         $this->feature_category_content_table = 'carousel_category_content';
         $this->feature_table = 'carousel';
@@ -67,30 +82,6 @@ class Carousel extends Feature
             $this->feature_content_table . '.content' => 'content',
             $this->feature_content_table . '.image_caption' => 'image_caption'
         ];
-
-    }
-
-    
-    public function add_feature_data($sql_params=null)
-    {
-        
-        return parent::add_feature_data();
-
-    }
-
-    
-    public function update_feature_data($sql_params=null)
-    {
-
-        return parent::update_feature_data();
-
-    }
-
-    
-    public function delete_feature_data($sql_params=null)
-    {
-
-        return parent::delete_feature_data();
 
     }
 

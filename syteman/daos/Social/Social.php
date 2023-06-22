@@ -8,14 +8,25 @@ class Social extends Feature
 
         parent::__construct();
 
+        // Define a name for the feature and it's category
         $this->feature = 'social';
 
         // For front end... the page on which the features will be displayed
         $this->feature_page = 'test_features';
         $this->template_preview = 'social-links-preview.html';
+        // $this->template_detail = 'partner-detail.html';
+        // $this->template_category_preview = 'default-feature-preview.html';
+        // $this->template_category_detail = 'default-feature-view.html';
 
-        // Feature related table(s)
+        // For backend... the CRUD files
+        // $this->feature_category_add_template = '';
+        // $this->feature_category_update_template = '';
+        $this->feature_add_template = 'social-add.html';
+        // $this->feature_update_template = '';
+
+        // Define the names of the tables as on db
         $this->feature_table = 'social_networks';
+
 
         // Feature Columns to be included in RD Statements
         $this->select_columns = $this->feature_table . '.id AS id,'
@@ -36,30 +47,6 @@ class Social extends Feature
             $this->feature_table . '.icon' => 'icon',
             $this->feature_table . '.image' => 'image'
         ];
-
-    }
-
-    
-    public function add_feature_data($sql_params=null)
-    {
-        
-        return parent::add_feature_data();
-
-    }
-
-    
-    public function update_feature_data($sql_params=null)
-    {
-
-        return parent::update_feature_data();
-
-    }
-
-    
-    public function delete_feature_data($sql_params=null)
-    {
-
-        return parent::delete_feature_data();
 
     }
 

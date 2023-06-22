@@ -18,7 +18,8 @@ class Run {
     
     // Replace non alphanumeric characters with dash
 	// and special (accented) characters with their corresponding alphanumeric
-	static function convert_special_characters($string) {
+	static function convert_special_characters($string) 
+    {
 
 		// pattern are @charaters and @symbols....
 		// the replacement are @replaceSymbols and @replaceCharaters....
@@ -62,7 +63,8 @@ class Run {
         $templateName, 
         $params=array()
 
-    ) {
+    ) 
+    {
 
         ob_start();
 
@@ -73,6 +75,7 @@ class Run {
         return $render_data;
 
     }
+
 
     // A Quick function to check if an image exists 
     // and add an img tag to it or display the default no image file.
@@ -117,6 +120,7 @@ class Run {
 
     }
 
+
     // A Quick function to post an image.
     static function post_image(
 
@@ -124,7 +128,8 @@ class Run {
         $attributes = null,
         $source = null
 
-    ) {
+    ) 
+    {
 
         $image_source = ( $source != null ) ? $source : PATH_TO_IMAGES;
 
@@ -154,7 +159,10 @@ class Run {
 
     }
 
-    static function redirect_to($destination) {
+
+    // Quick function to redirect to another page
+    static function redirect_to($destination) 
+    {
 
         echo '<script type="text/javascript">';
 
@@ -166,8 +174,10 @@ class Run {
 
     }
 
+
     // Create and Use Flash Messages (Handy for moving between request files)
-    static function set_flash_message($message) {
+    static function set_flash_message($message) 
+    {
 
 		$_SESSION['_flashmessage'][] = $message;
 
@@ -175,7 +185,8 @@ class Run {
 
 
     // Check if a flashmessage has been set 
-	static function has_flash_message() {
+	static function has_flash_message() 
+    {
 
 		if (isset($_SESSION['_flashmessage'])) return true;
 
@@ -185,7 +196,8 @@ class Run {
 
 
     // Fetch and use the flash messages that have been defined.
-	static function get_flash_message() {
+	static function get_flash_message() 
+    {
        
   	  	$ret = "";
   		$message = null;
@@ -217,7 +229,8 @@ class Run {
 
     
     // Do a Pagination 
-    static function paginate($number_of_pages, $page, $current_page=null, $template=null, $variable_data=null) {
+    static function paginate($number_of_pages, $page, $current_page=null, $template=null, $variable_data=null) 
+    {
         
         $template_file = ($template != null) ? $template : PATH_TO_SYM_THEME . '/web/views/paging.html';
         return Run::render_template_with_content(
@@ -234,7 +247,8 @@ class Run {
 
 
     // Select a template file 
-    static function get_template_file($template, $default=null) {
+    static function get_template_file($template, $default=null) 
+    {
         
         $file = PATH_TO_THEME . 'web/views/' . (
             !empty($template) 
@@ -252,7 +266,8 @@ class Run {
 
 
     // Check if a coded string is an existing feature
-    static function check_for_feature($string) {
+    static function check_for_feature($string) 
+    {
         
         if (
             (
@@ -275,6 +290,63 @@ class Run {
         } else $this_feature = false;
 
         return $this_feature;
+
+    }
+
+
+    // Make get FA icon from file extenstion 
+    static function get_icon_from_extension($string)
+    {
+            
+        switch($string) {
+
+            case 'pdf':
+                $icon = '-pdf';
+                break;
+
+            case 'doc':
+            case 'docx':
+                $icon = '-word';
+                break;
+
+            case 'xls':
+            case 'xlsx':
+                $icon = '-excel';
+                break;
+
+            case 'ppt':
+            case 'pptx':
+                $icon = '-powerpoint';
+                break;
+
+            default:
+                $icon = '';
+                break;
+                
+        }
+        
+        return $icon;
+
+    }
+
+
+    // Switch tool to preview docs btw gviewer and Liveviewer
+    static function resolve_document_viewer_link($name, $ext)
+    {
+        
+        switch($ext) {
+
+            case 'pdf':
+                $link = 'https://docs.google.com/gview?url=' . BASE_URL . '/' . REL_PATH_TO_DOCUMENTS . '/' . $name . '.' . $ext .  '&embedded=true';
+                break;
+
+            default:
+                $link = 'https://view.officeapps.live.com/op/embed.aspx?src=' . BASE_URL . '/' . REL_PATH_TO_DOCUMENTS . '/' . $name . '.' . $ext;
+                break;
+                
+        }
+        
+        return $link;
 
     }
 

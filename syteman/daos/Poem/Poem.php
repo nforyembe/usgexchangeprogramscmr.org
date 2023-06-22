@@ -8,14 +8,28 @@ class Poem extends Feature
 
         parent::__construct();
 
-        $this->feature_page = 'poems';
-
+        // Define a name for the feature and it's category
         $this->feature = 'poem';
         $this->feature_category = 'poem_category';
+
+        // For frontend... the page on which the features will be displayed
+        $this->feature_page = 'poems';
+        // $this->template_preview = '';
+        // $this->template_detail = '';
+
+        // For backend... the CRUD files
+        // $this->feature_category_add_template = '';
+        // $this->feature_category_update_template = '';
+        $this->feature_add_template = 'poem-add.html';
+        // $this->feature_update_template = 'poem-update.html';
+
+        // Define the names of the tables as on db
         $this->feature_category_table = 'poem_categories';
         $this->feature_category_content_table = 'poem_category_content';
+
         $this->feature_table = 'poems';
         $this->feature_content_table = 'poem_content';
+
 
         // Feature Category Columns to be included in RD Statements
         $this->select_category_columns = $this->feature_category_table . '.id AS id,'

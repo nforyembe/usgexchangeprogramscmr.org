@@ -27,10 +27,10 @@
                 <?php foreach ($links as $nav_link): ?>
                 
                     <li class="nav-item<?=
-                        ($nav_link['link'] == $current_page ? ' active' : '') . 
+                        ((!empty($nav_link['url']) ? $nav_link['url'] : $nav_link['link']) == $current_page ? ' active' : '') . 
                         (!empty($nav_link['sub_links']) ? ' dropdown' : '') 
                     ?>">
-                        <a class="nav-link<?=(!empty($nav_link['sub_links']) ? ' dropdown-toggle' : '') ?>" href="<?=BASE_URL . '/' . $nav_link['link'] ?>" <?=(!empty($nav_link['sub_links']) ? 'data-bs-toggle="dropdown" aria-expanded="false"' : '') ?>><?=
+                        <a class="nav-link<?=(!empty($nav_link['sub_links']) ? ' dropdown-toggle' : '') ?>" href="<?=BASE_URL . '/' . (!empty($nav_link['url']) ? $nav_link['url'] : $nav_link['link']) ?>" <?=(!empty($nav_link['sub_links']) ? 'data-bs-toggle="dropdown" aria-expanded="false"' : '') ?>><?=
                             isset($nav_link['title']) 
                                 ? $nav_link['title'] 
                                 : 'nav title' 
@@ -41,7 +41,7 @@
                             <ul class="dropdown-menu">
                                 <?php foreach ($nav_link['sub_links'] as $sub_link): ?>
 
-                                    <li class="nav-item"><a class="nav-link" href="<?=BASE_URL . '/' . $sub_link['link'] ?>"><?=
+                                    <li class="nav-item"><a class="nav-link" href="<?=BASE_URL . '/' . (!empty($sub_link['url']) ? $sub_link['url'] : $sub_link['link']) ?>"><?=
                                         isset($sub_link['title']) 
                                             ? $sub_link['title'] 
                                             : 'sub_nav title' 

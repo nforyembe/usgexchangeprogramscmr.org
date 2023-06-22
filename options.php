@@ -41,14 +41,17 @@ if (isset($_SERVER['REQUEST_METHOD'])) {
 
 
 // Create Base URL for absolute linking
-$baseURL = $_SERVER['REQUEST_SCHEME'] . '://' . SERVER_NAME;
+$base_url = $_SERVER['REQUEST_SCHEME'] . '://' . SERVER_NAME;
 if (defined('DEVELOPMENT')) {
 
-    defined('LOCALHOST') or define('LOCALHOST', $baseURL . '/');
+    defined('LOCALHOST') or define('LOCALHOST', 'http://localhost/');
 
-    $uri_paths = explode('/', REQUEST_URI);
-    
-    defined('PROJECT_NAME') or define("PROJECT_NAME", "/$uri_paths[1]");
+    if (SERVER_NAME == 'localhost') {
+
+        $uri_paths = explode('/', REQUEST_URI);
+        defined('PROJECT_NAME') or define("PROJECT_NAME", "/$uri_paths[1]");
+        
+    }
 
 } else {
   
@@ -58,7 +61,7 @@ if (defined('DEVELOPMENT')) {
 }
 
 
-defined('BASE_URL') or define('BASE_URL', $baseURL . (defined('PROJECT_NAME') ? PROJECT_NAME : ''));
+defined('BASE_URL') or define('BASE_URL', $base_url . (defined('PROJECT_NAME') ? PROJECT_NAME : ''));
 
 
 // Create Root Directory Constant									                                

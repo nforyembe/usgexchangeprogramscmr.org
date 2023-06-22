@@ -8,12 +8,35 @@ class Page extends Feature
 
         parent::__construct();
 
+        // Define a name for the feature and it's category
         $this->feature = 'page';
         $this->feature_category = 'page_category';
+
+        // For front end... the page on which the features will be displayed
+        // $this->feature_page = 'news';
+        // $this->template_preview = 'page-preview.html';
+        // $this->template_detail = 'page-detail.html';
+        // $this->template_category_preview = 'default-feature-preview.html';
+        // $this->template_category_detail = 'default-feature-view.html';
+
+        // For backend... the CRUD files
+        // $this->feature_category_add_template = 'default-feature-category-add.html';
+        // $this->feature_category_update_template = 'default-feature-category-edit.html';
+        $this->feature_add_template = 'page-add.html';
+        // $this->feature_update_template = 'page-edit.html';
+
+        // Define the names of the tables as on db
         $this->feature_category_table = 'page_categories';
         $this->feature_category_content_table = 'page_category_content';
+
         $this->feature_table = 'pages';
         $this->feature_content_table = 'page_content';
+        
+        // Define the columns to join the feature content table to the feature table
+        // $this->join_column = '';
+        // ...and (if category_id was not used), the column to join the feature to the corresponding category content table, in the case of a categorized feature
+        // $this->join_column_category = '';
+
 
         // Feature Category Columns to be included in RD Statements
         $this->select_category_columns = $this->feature_category_table . '.id AS id,'
