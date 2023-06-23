@@ -19,6 +19,12 @@ class Publication extends Feature
         $this->template_category_preview = 'publication-category-preview.html';
         // $this->template_category_detail = 'publication-category-detail.html';
 
+        // For backend... the CRUD files
+        // $this->feature_category_add_template = '';
+        // $this->feature_category_update_template = '';
+        $this->feature_add_template = 'publication-add.html';
+        // $this->feature_update_template = '';
+
         // Define the names of the tables as on db
         $this->feature_category_table = 'publication_categories';
         $this->feature_category_content_table = 'publication_category_content';

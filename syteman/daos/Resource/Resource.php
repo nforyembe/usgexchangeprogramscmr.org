@@ -19,6 +19,12 @@ class Resource extends Feature
         $this->template_category_preview = 'resource-category-preview.html';
         // $this->template_category_detail = 'resource-view.html';
 
+        // For backend... the CRUD files
+        // $this->feature_category_add_template = '';
+        // $this->feature_category_update_template = '';
+        $this->feature_add_template = 'resource-add.html';
+        // $this->feature_update_template = '';
+
         // Define the names of the tables as on db
         $this->feature_category_table = 'resource_categories';
         $this->feature_category_content_table = 'resource_category_content';

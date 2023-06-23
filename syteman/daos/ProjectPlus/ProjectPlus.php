@@ -19,6 +19,12 @@ class ProjectPlus extends Feature
         // $this->template_category_preview = 'default-feature-preview.html';
         // $this->template_category_detail = 'default-feature-view.html';
 
+        // For backend... the CRUD files
+        // $this->feature_category_add_template = '';
+        // $this->feature_category_update_template = '';
+        $this->feature_add_template = 'projectplus-add.html';
+        // $this->feature_update_template = '';
+
         // Define the names of the tables as on db
         // $this->feature_category_table = 'project_categories';
         // $this->feature_category_content_table = 'project_category_content';
@@ -26,7 +32,7 @@ class ProjectPlus extends Feature
         $this->feature_table = 'projects';
         $this->feature_content_table = 'project_content';
         
-         // Define the columns to join the feature content table to the feature table
+        // Define the columns to join the feature content table to the feature table
         $this->join_column = 'project_id';
         // ...and (if category_id was not used), the column to join the feature to the corresponding category content table, in the case of a categorized feature
         // $this->join_column_category = '';
