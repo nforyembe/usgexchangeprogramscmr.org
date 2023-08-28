@@ -3,17 +3,17 @@
 	<?php
 
 		if ($current_page != 1) 
-			echo '<a href="' . Route::resolve_pagination_in_uri(($current_page - 1)) . '" class="btn btn-custom-light">&larr;</a>';
+			echo '<a href="' . Route::resolve_pagination_in_uri(($current_page - 1)) . '" class="btn btn-custom-primary">&larr;</a>';
 			
 		if ($number_of_pages > 10) 
-			echo '<a href="' . Route::resolve_pagination_in_uri(1) . '" class="btn btn-custom-light btn-sm">First Page</a>';
+			echo '<a href="' . Route::resolve_pagination_in_uri(1) . '" class="btn btn-custom-primary btn-sm">First Page</a>';
 
 		for ($j = 1; $j <= $number_of_pages; $j++) {
 
-			echo '<a  class="btn btn-custom-light'
+			echo '<a  class="btn btn-custom-primary'
 				. ($current_page != $j 
-					? ' btn-light shadow-sm" href="' . Route::resolve_pagination_in_uri($j) . '"' 
-					: ' pe-none"'
+					? ' shadow-sm" href="' . Route::resolve_pagination_in_uri($j) . '"' 
+					: ' pe-none bg-light text-custom-primary"'
 				) . 
 			'>'
 				. $j . 
@@ -22,10 +22,10 @@
 		}
 
 		if ($number_of_pages > 10) 
-			echo '<a href="' . Route::resolve_pagination_in_uri($number_of_pages) . '" class="btn btn-custom-light btn-sm">Last Page</a>';
+			echo '<a href="' . Route::resolve_pagination_in_uri($number_of_pages) . '" class="btn btn-custom-primary btn-sm">Last Page</a>';
 			
 		if ($current_page != $number_of_pages) 
-			echo '<a href="' . Route::resolve_pagination_in_uri(($current_page + 1)) . '" class="btn btn-custom-light">&rarr;</a>';
+			echo '<a href="' . Route::resolve_pagination_in_uri(($current_page + 1)) . '" class="btn btn-custom-primary">&rarr;</a>';
 
 	?>
 </div>

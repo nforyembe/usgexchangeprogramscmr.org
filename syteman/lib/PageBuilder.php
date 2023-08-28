@@ -541,7 +541,7 @@ class PageBuilder extends Db
                                 
                                 $category_data = $category_data_status[0];
                                 $all_features = $object->fetch_features_by_category($category);
-                                $features = $object->fetch_features_by_category($category, ['limit' => $results_limit]);
+                                $features = $object->fetch_features_by_category($category, isset($paginated) ? ['limit' => $results_limit] : null);
 
                             }
                             
@@ -550,14 +550,14 @@ class PageBuilder extends Db
                         } else {
                             
                             $all_features = $object->fetch_all_feature_categories();
-                            $features = $object->fetch_all_feature_categories(['limit' => $results_limit]);
+                            $features = $object->fetch_all_feature_categories(isset($paginated) ? ['limit' => $results_limit] : null);
                             $template = Run::get_template_file($page_data['template'], (isset($object->template_category_preview) ? $object->template_category_preview : 'default-feature-category-preview.html'));
                             
                         }
 
                     } else {
 
-                        $features = $object->fetch_all_features(['limit' => $results_limit]);
+                        $features = $object->fetch_all_features(isset($paginated) ? ['limit' => $results_limit] : null);
                         $template = Run::get_template_file($page_data['template'], (isset($object->template_preview) ? $object->template_preview : 'default-feature-preview.html'));
 
                     }
@@ -568,14 +568,18 @@ class PageBuilder extends Db
                 // Generate Pagination
                 if (!Route::is_feature_page()) {
 
-                    $number_of_pages = ceil(count($all_features) / $results_per_page);
-                    if ($number_of_pages > 1)
-                        $paginate = ['number_of_pages' => $number_of_pages, 
-                            'page' => CURRENT_PAGE, 
-                            'current_page' => $current_page
-                        ];
-                    else 
-                        $paginate = null;
+                    if (isset($paginated)) {
+
+                        $number_of_pages = ceil(count($all_features) / $results_per_page);
+                        if ($number_of_pages > 1)
+                            $paginate = ['number_of_pages' => $number_of_pages, 
+                                'page' => CURRENT_PAGE, 
+                                'current_page' => $current_page
+                            ];
+                        else 
+                            $paginate = null;
+
+                    }
 
                 }
 
